@@ -1027,6 +1027,11 @@ ul, ol { list-style: none; }
 .image-grid-scroll .grid-img img:hover { opacity: 0.8; }
 
 /* Image rows (Feed + Stories) */
+.image-row-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 .image-row {
   display: flex;
   gap: 12px;
@@ -1074,6 +1079,49 @@ ul, ol { list-style: none; }
 .image-row-stories .row-img {
   width: 200px;
   aspect-ratio: 9 / 16;
+}
+
+/* Image row arrows */
+.image-row-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: var(--transition);
+  opacity: 0;
+}
+
+.image-row-wrapper:hover .image-row-arrow {
+  opacity: 1;
+}
+
+.image-row-arrow:hover {
+  background: rgba(30, 30, 30, 0.95);
+  border-color: var(--white);
+}
+
+.image-row-arrow.arrow-prev {
+  left: 8px;
+}
+
+.image-row-arrow.arrow-next {
+  right: 8px;
+}
+
+.image-row-arrow.hidden {
+  display: none;
 }
 
 /* Stacked videos (one per row) */

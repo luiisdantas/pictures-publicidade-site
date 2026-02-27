@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initScrollReveal();
   initSmoothScroll();
+  initImageRowArrows();
   initCarousels();
   initVideoPlayback();
   initMediaLightbox();
@@ -91,6 +92,62 @@ function initSmoothScroll() {
       const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
       window.scrollTo({ top: targetPosition, behavior: 'smooth' });
     });
+  });
+}
+
+/* ================================================================
+   IMAGE ROW ARROWS (Feed + Stories navigation)
+   ================================================================ */
+function initImageRowArrows() {
+  document.querySelectorAll('.image-row').forEach(row => {
+    // Create wrapper
+    const wrapper = document.createElement('div');
+    wrapper.className = 'image-row-wrapper';
+
+    // Transfer margin-bottom from row to wrapper
+    const mb = row.style.marginBottom;
+    if (mb) {
+      wrapper.style.marginBottom = mb;
+      row.style.marginBottom = '0';
+    }
+
+    // Insert wrapper before the row, then move row inside
+    row.parentNode.insertBefore(wrapper, row);
+    wrapper.appendChild(row);
+
+    // Create arrows
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'image-row-arrow arrow-prev';
+    prevBtn.setAttribute('aria-label', 'Anterior');
+    prevBtn.innerHTML = '&#8249;';
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'image-row-arrow arrow-next';
+    nextBtn.setAttribute('aria-label', 'Próximo');
+    nextBtn.innerHTML = '&#8250;';
+
+    wrapper.appendChild(prevBtn);
+    wrapper.appendChild(nextBtn);
+
+    const scrollAmount = 300;
+
+    function updateArrows() {
+      const { scrollLeft, scrollWidth, clientWidth } = row;
+      prevBtn.classList.toggle('hidden', scrollLeft <= 5);
+      nextBtn.classList.toggle('hidden', scrollLeft + clientWidth >= scrollWidth - 5);
+    }
+
+    prevBtn.addEventListener('click', () => {
+      row.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    nextBtn.addEventListener('click', () => {
+      row.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    row.addEventListener('scroll', updateArrows, { passive: true });
+    updateArrows();
+    window.addEventListener('resize', updateArrows, { passive: true });
   });
 }
 
