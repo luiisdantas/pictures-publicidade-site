@@ -1,15 +1,15 @@
 /**
  * Pictures Publicidade - Main JavaScript
- * Handles: Navigation, Scroll Reveal, Lightbox, Carousel, Video Playback
+ * Handles: Navigation, Scroll Reveal, Media Lightbox, Carousel, Video Playback
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initScrollReveal();
-  initLightbox();
   initSmoothScroll();
   initCarousels();
   initVideoPlayback();
+  initMediaLightbox();
 });
 
 /* ================================================================
@@ -21,17 +21,12 @@ function initNavigation() {
   const links = document.getElementById('navLinks');
 
   // Scroll effect
-  let lastScroll = 0;
   window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-
-    if (currentScroll > 50) {
+    if (window.pageYOffset > 50) {
       nav.classList.add('scrolled');
     } else {
       nav.classList.remove('scrolled');
     }
-
-    lastScroll = currentScroll;
   }, { passive: true });
 
   // Mobile toggle
@@ -42,7 +37,6 @@ function initNavigation() {
       document.body.style.overflow = links.classList.contains('active') ? 'hidden' : '';
     });
 
-    // Close on link click
     links.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         toggle.classList.remove('active');
@@ -51,7 +45,6 @@ function initNavigation() {
       });
     });
 
-    // Close on outside click
     document.addEventListener('click', (e) => {
       if (!nav.contains(e.target) && links.classList.contains('active')) {
         toggle.classList.remove('active');
@@ -67,7 +60,6 @@ function initNavigation() {
    ================================================================ */
 function initScrollReveal() {
   const reveals = document.querySelectorAll('.reveal');
-
   if (!reveals.length) return;
 
   const observer = new IntersectionObserver((entries) => {
@@ -77,10 +69,7 @@ function initScrollReveal() {
         observer.unobserve(entry.target);
       }
     });
-  }, {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
   reveals.forEach(el => observer.observe(el));
 }
@@ -98,14 +87,9 @@ function initSmoothScroll() {
       if (!target) return;
 
       e.preventDefault();
-
       const navHeight = document.getElementById('nav').offsetHeight;
       const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
-
-      window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: targetPosition, behavior: 'smooth' });
     });
   });
 }
@@ -114,9 +98,7 @@ function initSmoothScroll() {
    CAROUSEL
    ================================================================ */
 function initCarousels() {
-  const carousels = document.querySelectorAll('.carousel');
-
-  carousels.forEach(carousel => {
+  document.querySelectorAll('.carousel').forEach(carousel => {
     const track = carousel.querySelector('.carousel-track');
     const prevBtn = carousel.querySelector('.carousel-prev');
     const nextBtn = carousel.querySelector('.carousel-next');
@@ -140,20 +122,16 @@ function initCarousels() {
     });
 
     track.addEventListener('scroll', updateArrows, { passive: true });
-
-    // Initial state
     updateArrows();
-
-    // Update on resize
     window.addEventListener('resize', updateArrows, { passive: true });
   });
 }
 
 /* ================================================================
-   VIDEO PLAYBACK (play on hover / click)
+   VIDEO PLAYBACK (play on hover / click for carousel items)
    ================================================================ */
 function initVideoPlayback() {
-  const videos = document.querySelectorAll('.carousel-item video, .stacked-video-item video, .image-grid-scroll video');
+  const videos = document.querySelectorAll('.carousel-item video, .stacked-video-item video');
 
   videos.forEach(video => {
     video.muted = true;
@@ -161,35 +139,29 @@ function initVideoPlayback() {
     video.loop = true;
     video.preload = 'metadata';
 
-    // Play on hover (desktop)
-    video.closest('.carousel-item, .stacked-video-item')?.addEventListener('mouseenter', () => {
+    const container = video.closest('.carousel-item, .stacked-video-item');
+    if (!container) return;
+
+    // Play on hover (desktop) - only preview, lightbox handles full playback
+    container.addEventListener('mouseenter', () => {
       video.play().catch(() => {});
     });
 
-    video.closest('.carousel-item, .stacked-video-item')?.addEventListener('mouseleave', () => {
+    container.addEventListener('mouseleave', () => {
       video.pause();
-    });
-
-    // Play on click (mobile) - toggle
-    video.addEventListener('click', () => {
-      if (video.paused) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
+      video.currentTime = 0;
     });
   });
 
-  // Also handle IntersectionObserver for stacked videos to auto-play when in view
+  // Auto-play stacked videos when in view
   const stackedVideos = document.querySelectorAll('.stacked-video-item video');
   if (stackedVideos.length) {
     const videoObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        const vid = entry.target;
         if (entry.isIntersecting) {
-          vid.play().catch(() => {});
+          entry.target.play().catch(() => {});
         } else {
-          vid.pause();
+          entry.target.pause();
         }
       });
     }, { threshold: 0.5 });
@@ -199,93 +171,231 @@ function initVideoPlayback() {
 }
 
 /* ================================================================
-   LIGHTBOX (for portfolio pages)
+   MEDIA LIGHTBOX (unified: images + videos)
+   Opens images in lightbox, videos in fullscreen modal with controls.
+   Works on: carousel items, grid images, stacked videos.
    ================================================================ */
-function initLightbox() {
-  const galleryItems = document.querySelectorAll('[data-lightbox]');
-
-  if (!galleryItems.length) return;
-
-  // Create lightbox element
+function initMediaLightbox() {
+  // Create lightbox overlay
   const lightbox = document.createElement('div');
-  lightbox.className = 'lightbox';
-  lightbox.id = 'lightbox';
+  lightbox.className = 'media-lightbox';
+  lightbox.id = 'mediaLightbox';
   lightbox.innerHTML = `
-    <button class="lightbox-close" aria-label="Fechar">&times;</button>
-    <button class="lightbox-nav lightbox-prev" aria-label="Anterior">&#8249;</button>
-    <button class="lightbox-nav lightbox-next" aria-label="Proximo">&#8250;</button>
-    <img src="" alt="" id="lightboxImg">
+    <button class="mlb-close" aria-label="Fechar">&times;</button>
+    <button class="mlb-nav mlb-prev" aria-label="Anterior">&#8249;</button>
+    <button class="mlb-nav mlb-next" aria-label="Próximo">&#8250;</button>
+    <div class="mlb-content">
+      <img class="mlb-img" src="" alt="" style="display:none">
+      <video class="mlb-video" controls playsinline style="display:none"></video>
+    </div>
+    <div class="mlb-counter"></div>
   `;
   document.body.appendChild(lightbox);
 
-  const lightboxImg = document.getElementById('lightboxImg');
-  const closeBtn = lightbox.querySelector('.lightbox-close');
-  const prevBtn = lightbox.querySelector('.lightbox-prev');
-  const nextBtn = lightbox.querySelector('.lightbox-next');
+  const mlbImg = lightbox.querySelector('.mlb-img');
+  const mlbVideo = lightbox.querySelector('.mlb-video');
+  const mlbClose = lightbox.querySelector('.mlb-close');
+  const mlbPrev = lightbox.querySelector('.mlb-prev');
+  const mlbNext = lightbox.querySelector('.mlb-next');
+  const mlbCounter = lightbox.querySelector('.mlb-counter');
 
+  let mediaItems = [];
   let currentIndex = 0;
-  const images = Array.from(galleryItems);
 
-  function openLightbox(index) {
+  // Collect all clickable media grouped by section
+  function collectMediaInContext(clickedEl) {
+    // Find the closest section/container that groups media together
+    const section = clickedEl.closest('.portfolio-client, .media-section, .gallery-section, .video-section, .carousel, .stacked-videos, .image-grid-scroll, .image-row');
+
+    if (!section) return [clickedEl];
+
+    const items = [];
+
+    // Collect images
+    section.querySelectorAll('.carousel-item img, .grid-img img, .gallery-item img, .image-row img, [data-lightbox] img').forEach(img => {
+      items.push({ type: 'image', src: img.src, alt: img.alt || '', element: img.closest('.carousel-item, .grid-img, .gallery-item, [data-lightbox], .image-row > *') || img });
+    });
+
+    // Collect videos
+    section.querySelectorAll('.carousel-item video, .stacked-video-item video').forEach(vid => {
+      const src = vid.src || vid.querySelector('source')?.src;
+      if (src) {
+        items.push({ type: 'video', src: src, element: vid.closest('.carousel-item, .stacked-video-item') || vid });
+      }
+    });
+
+    return items;
+  }
+
+  function openLightbox(items, index) {
+    mediaItems = items;
     currentIndex = index;
-    const item = images[currentIndex];
-    const img = item.querySelector('img') || item;
-    const src = img.dataset?.full || img.src;
-
-    if (!src) return;
-
-    lightboxImg.src = src;
-    lightboxImg.alt = img.alt || '';
+    showCurrentItem();
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    // Show/hide nav if only 1 item
+    const hasNav = mediaItems.length > 1;
+    mlbPrev.style.display = hasNav ? '' : 'none';
+    mlbNext.style.display = hasNav ? '' : 'none';
+    mlbCounter.style.display = hasNav ? '' : 'none';
   }
 
   function closeLightbox() {
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
+    mlbVideo.pause();
+    mlbVideo.removeAttribute('src');
+    mlbVideo.style.display = 'none';
+    mlbImg.style.display = 'none';
   }
 
-  function navigate(direction) {
-    currentIndex = (currentIndex + direction + images.length) % images.length;
-    const item = images[currentIndex];
-    const img = item.querySelector('img') || item;
-    const src = img.dataset?.full || img.src;
+  function showCurrentItem() {
+    const item = mediaItems[currentIndex];
+    if (!item) return;
 
-    if (src) {
-      lightboxImg.style.opacity = '0';
-      setTimeout(() => {
-        lightboxImg.src = src;
-        lightboxImg.alt = img.alt || '';
-        lightboxImg.style.opacity = '1';
-      }, 150);
+    if (item.type === 'image') {
+      mlbVideo.pause();
+      mlbVideo.style.display = 'none';
+      mlbImg.src = item.src;
+      mlbImg.alt = item.alt;
+      mlbImg.style.display = '';
+    } else {
+      mlbImg.style.display = 'none';
+      mlbVideo.src = item.src;
+      mlbVideo.style.display = '';
+      mlbVideo.play().catch(() => {});
     }
+
+    mlbCounter.textContent = `${currentIndex + 1} / ${mediaItems.length}`;
+  }
+
+  function navigate(dir) {
+    mlbVideo.pause();
+    currentIndex = (currentIndex + dir + mediaItems.length) % mediaItems.length;
+    showCurrentItem();
   }
 
   // Event listeners
-  images.forEach((item, index) => {
-    item.style.cursor = 'pointer';
-    item.addEventListener('click', (e) => {
-      e.preventDefault();
-      openLightbox(index);
-    });
-  });
-
-  closeBtn.addEventListener('click', closeLightbox);
-  prevBtn.addEventListener('click', (e) => { e.stopPropagation(); navigate(-1); });
-  nextBtn.addEventListener('click', (e) => { e.stopPropagation(); navigate(1); });
-
+  mlbClose.addEventListener('click', closeLightbox);
+  mlbPrev.addEventListener('click', (e) => { e.stopPropagation(); navigate(-1); });
+  mlbNext.addEventListener('click', (e) => { e.stopPropagation(); navigate(1); });
   lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
+    if (e.target === lightbox || e.target.classList.contains('mlb-content')) closeLightbox();
   });
 
-  // Keyboard navigation
+  // Keyboard
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('active')) return;
-
     switch (e.key) {
       case 'Escape': closeLightbox(); break;
       case 'ArrowLeft': navigate(-1); break;
       case 'ArrowRight': navigate(1); break;
     }
+  });
+
+  // Swipe support (mobile)
+  let touchStartX = 0;
+  lightbox.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  lightbox.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 60) {
+      navigate(diff > 0 ? -1 : 1);
+    }
+  }, { passive: true });
+
+  // --- Attach click handlers to all media elements ---
+
+  // 1. Carousel images (index page)
+  document.querySelectorAll('.carousel-item.item-image').forEach(item => {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const items = collectMediaInContext(item);
+      const idx = items.findIndex(m => m.element === item);
+      openLightbox(items, idx >= 0 ? idx : 0);
+    });
+  });
+
+  // 2. Carousel videos (reels + horizontal videos - index + dedicated pages)
+  document.querySelectorAll('.carousel-item.item-reel, .carousel-item.item-video').forEach(item => {
+    item.style.cursor = 'pointer';
+    // Add play icon overlay
+    if (!item.querySelector('.play-overlay')) {
+      const overlay = document.createElement('div');
+      overlay.className = 'play-overlay';
+      overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>';
+      item.appendChild(overlay);
+    }
+
+    function openVideoItem(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const vid = item.querySelector('video');
+      if (vid) vid.pause();
+      const items = collectMediaInContext(item);
+      const idx = items.findIndex(m => m.element === item);
+      openLightbox(items, idx >= 0 ? idx : 0);
+    }
+
+    // Click on overlay opens lightbox
+    item.querySelector('.play-overlay').addEventListener('click', openVideoItem);
+    // Click on the item itself also opens lightbox
+    item.addEventListener('click', openVideoItem);
+  });
+
+  // 3. Image grid items (DUBOM dedicated page)
+  document.querySelectorAll('.grid-img[data-lightbox], .gallery-item[data-lightbox]').forEach(item => {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const items = collectMediaInContext(item);
+      const idx = items.findIndex(m => m.element === item);
+      openLightbox(items, idx >= 0 ? idx : 0);
+    });
+  });
+
+  // 4. Image row items (feed/stories rows)
+  document.querySelectorAll('.image-row img').forEach(img => {
+    const wrapper = img.closest('.image-row > *') || img;
+    wrapper.style.cursor = 'pointer';
+    wrapper.addEventListener('click', (e) => {
+      e.preventDefault();
+      const items = collectMediaInContext(wrapper);
+      const idx = items.findIndex(m => m.src === img.src);
+      openLightbox(items, idx >= 0 ? idx : 0);
+    });
+  });
+
+  // 5. Stacked videos (dedicated pages)
+  document.querySelectorAll('.stacked-video-item').forEach(item => {
+    item.style.cursor = 'pointer';
+    // Add play overlay
+    if (!item.querySelector('.play-overlay')) {
+      const overlay = document.createElement('div');
+      overlay.className = 'play-overlay';
+      overlay.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>';
+      item.style.position = 'relative';
+      item.appendChild(overlay);
+    }
+
+    item.addEventListener('click', (e) => {
+      // Don't intercept native controls clicks
+      if (e.target.closest('video')) {
+        // Only open lightbox if click is not on controls area (bottom 40px)
+        const rect = item.getBoundingClientRect();
+        const clickY = e.clientY - rect.top;
+        if (clickY > rect.height - 50) return; // Let native controls work
+      }
+      e.preventDefault();
+      const vid = item.querySelector('video');
+      if (vid) vid.pause();
+      const items = collectMediaInContext(item);
+      const idx = items.findIndex(m => m.element === item);
+      openLightbox(items, idx >= 0 ? idx : 0);
+    });
   });
 }
