@@ -1635,6 +1635,8 @@ ul, ol { list-style: none; }
 }
 
 @media (max-width: 768px) {
+  .container { padding: 0 20px; }
+
   .nav-links {
     position: fixed;
     top: 0;
@@ -1654,12 +1656,42 @@ ul, ol { list-style: none; }
   .nav-links a { font-size: 1rem; }
   .nav-toggle { display: flex; }
 
+  .nav-logo img { height: 40px; }
+
   .services-grid { grid-template-columns: 1fr; }
   .portfolio-grid { grid-template-columns: 1fr; }
   .diff-grid { grid-template-columns: 1fr; }
   .about-values { grid-template-columns: 1fr; }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .video-grid { grid-template-columns: 1fr; }
+
+  /* Portfolio client header: stack vertically on mobile */
+  .portfolio-client-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .portfolio-client-header .btn-sm {
+    align-self: flex-start;
+  }
+
+  .portfolio-client-header p {
+    max-width: 100%;
+  }
+
+  /* Portfolio hero spacing on mobile */
+  .portfolio-hero {
+    padding: 120px 20px 60px;
+  }
+
+  /* Case meta on mobile */
+  .case-meta {
+    gap: 20px;
+  }
+
+  .case-meta-item .value {
+    font-size: 0.82rem;
+  }
 
   .footer-grid {
     grid-template-columns: 1fr;
@@ -1682,10 +1714,35 @@ ul, ol { list-style: none; }
   }
 
   .cta-section { padding: 64px 0; }
+
+  /* Diff items on mobile */
+  .diff-item {
+    padding: 28px;
+    gap: 16px;
+  }
+
+  .diff-number {
+    font-size: 2rem;
+    min-width: 40px;
+  }
+
+  /* Lightbox on mobile */
+  .media-lightbox { padding: 16px; }
+  .mlb-nav { width: 36px; height: 36px; font-size: 1.1rem; }
+  .mlb-close { width: 36px; height: 36px; font-size: 1.1rem; }
+  .mlb-prev { left: 8px; }
+  .mlb-next { right: 8px; }
 }
 
 @media (max-width: 480px) {
+  .container { padding: 0 16px; }
+
   .hero h1 { font-size: 1.8rem; }
+
+  .hero .container {
+    padding-top: 120px;
+    padding-bottom: 60px;
+  }
 
   .hero-actions {
     flex-direction: column;
@@ -1700,4 +1757,45 @@ ul, ol { list-style: none; }
   .gallery-grid { grid-template-columns: 1fr; }
 
   .portfolio-card { aspect-ratio: 16 / 12; }
+
+  .nav-logo img { height: 36px; }
+
+  .portfolio-hero {
+    padding: 110px 16px 48px;
+  }
+
+  .portfolio-hero h1 {
+    font-size: 1.6rem;
+  }
+
+  /* Image rows smaller on very small screens */
+  .image-row-feed .row-img {
+    width: 220px;
+  }
+
+  .image-row-stories .row-img {
+    width: 160px;
+  }
+
+  .carousel-item.item-reel {
+    width: 160px;
+  }
+
+  .carousel-item.item-video {
+    width: 300px;
+  }
+
+  /* About section */
+  .about-card {
+    padding: 32px;
+  }
+
+  .about-card .tagline {
+    font-size: 1.1rem;
+  }
+
+  /* Service cards */
+  .service-card {
+    padding: 28px 24px;
+  }
 }
