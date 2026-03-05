@@ -5,10 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DUBOM | Portfólio - Pictures Publicidade</title>
   <meta name="description" content="Case DUBOM - Branding, identidade visual e produção de conteúdo. Veja o trabalho completo da Pictures Publicidade.">
+  <!-- Fonts: preconnect + non-blocking -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"></noscript>
+
+  <!-- Styles -->
+  <link rel="preload" as="style" href="../css/style.css">
   <link rel="stylesheet" href="../css/style.css">
+
+  <!-- Critical inline styles -->
+  <style>
+    :root{--bg:#141414;--white:#FFFFFF;--text:#E8E8E8;--text-secondary:#999;--text-muted:#666;--accent:#FF6B6B;--border:#2a2a2a;--font:'Poppins',sans-serif;--container:1100px;--radius-sm:8px;--radius-md:12px}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{font-size:16px}body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.6;overflow-x:hidden}
+    img{max-width:100%;height:auto;display:block}a{text-decoration:none;color:inherit}
+    .container{max-width:var(--container);margin:0 auto;padding:0 32px}
+    .nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 0}
+    .nav.scrolled{background:rgba(20,20,20,0.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:16px 0;border-bottom:1px solid var(--border)}
+    .nav .container{display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{display:flex;align-items:center;gap:10px}.nav-logo img{height:48px;width:auto}
+  </style>
+
   <link rel="icon" type="image/png" href="../assets/icons/LOGO ÍCONE.png">
 
   <!-- Vercel Analytics & Speed Insights -->
@@ -20,7 +40,7 @@
   <nav class="nav scrolled" id="nav">
     <div class="container">
       <a href="../index.html" class="nav-logo">
-        <img src="../assets/logo/LOGO COMPLETA.png" alt="Pictures Publicidade">
+        <img decoding="async" src="../assets/logo/logo-completa-optimized.png" alt="Pictures Publicidade" width="288" height="96">
         <div class="logo-text">
           <span>Pictures</span>
           <span>Publicidade e Produções</span>
@@ -98,17 +118,17 @@
     <div class="container">
       <h3 class="media-section-title">Feed</h3>
       <div class="image-row image-row-feed">
-        <div class="row-img" data-lightbox><img src="../assets/portfolio/dubom/imagens/img-01.jpg" alt="DUBOM - Arte Use Dubom" loading="lazy"></div>
-        <div class="row-img" data-lightbox><img src="../assets/portfolio/dubom/imagens/img-02.jpg" alt="DUBOM - Dia da Massa" loading="lazy"></div>
-        <div class="row-img" data-lightbox><img src="../assets/portfolio/dubom/imagens/img-04.jpg" alt="DUBOM - Thumbnail YouTube" loading="lazy"></div>
-        <div class="row-img" data-lightbox><img src="../assets/portfolio/dubom/imagens/img-05.jpg" alt="DUBOM - Molho de Pimenta" loading="lazy"></div>
-        <div class="row-img" data-lightbox><img src="../assets/portfolio/dubom/imagens/img-06.jpg" alt="DUBOM - Granola" loading="lazy"></div>
+        <div class="row-img" data-lightbox><img decoding="async" src="../assets/portfolio/dubom/imagens/img-01.jpg" alt="DUBOM - Arte Use Dubom" loading="lazy"></div>
+        <div class="row-img" data-lightbox><img decoding="async" src="../assets/portfolio/dubom/imagens/img-02.jpg" alt="DUBOM - Dia da Massa" loading="lazy"></div>
+        <div class="row-img" data-lightbox><img decoding="async" src="../assets/portfolio/dubom/imagens/img-04.jpg" alt="DUBOM - Thumbnail YouTube" loading="lazy"></div>
+        <div class="row-img" data-lightbox><img decoding="async" src="../assets/portfolio/dubom/imagens/img-05.jpg" alt="DUBOM - Molho de Pimenta" loading="lazy"></div>
+        <div class="row-img" data-lightbox><img decoding="async" src="../assets/portfolio/dubom/imagens/img-06.jpg" alt="DUBOM - Granola" loading="lazy"></div>
       </div>
 
       <h3 class="media-section-title" style="margin-top: 32px;">Stories</h3>
       <div class="image-row image-row-stories">
-        <div class="row-img" data-lightbox><img src="../assets/portfolio/dubom/imagens/img-03.jpg" alt="DUBOM - Stories" loading="lazy"></div>
-        <div class="row-img" data-lightbox><img src="../assets/portfolio/dubom/imagens/img-07.jpg" alt="DUBOM - Stories Granola" loading="lazy"></div>
+        <div class="row-img" data-lightbox><img decoding="async" src="../assets/portfolio/dubom/imagens/img-03.jpg" alt="DUBOM - Stories" loading="lazy"></div>
+        <div class="row-img" data-lightbox><img decoding="async" src="../assets/portfolio/dubom/imagens/img-07.jpg" alt="DUBOM - Stories Granola" loading="lazy"></div>
       </div>
     </div>
   </section>

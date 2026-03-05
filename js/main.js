@@ -79,6 +79,7 @@ function initScrollReveal() {
    SMOOTH SCROLL
    ================================================================ */
 function initSmoothScroll() {
+  const nav = document.getElementById('nav');
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       const targetId = this.getAttribute('href');
@@ -88,9 +89,11 @@ function initSmoothScroll() {
       if (!target) return;
 
       e.preventDefault();
-      const navHeight = document.getElementById('nav').offsetHeight;
-      const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
-      window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+      requestAnimationFrame(() => {
+        const navHeight = nav.offsetHeight;
+        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+        window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+      });
     });
   });
 }
@@ -131,10 +134,15 @@ function initImageRowArrows() {
 
     const scrollAmount = 300;
 
+    let arrowRaf;
     function updateArrows() {
-      const { scrollLeft, scrollWidth, clientWidth } = row;
-      prevBtn.classList.toggle('hidden', scrollLeft <= 5);
-      nextBtn.classList.toggle('hidden', scrollLeft + clientWidth >= scrollWidth - 5);
+      if (arrowRaf) return;
+      arrowRaf = requestAnimationFrame(() => {
+        const { scrollLeft, scrollWidth, clientWidth } = row;
+        prevBtn.classList.toggle('hidden', scrollLeft <= 5);
+        nextBtn.classList.toggle('hidden', scrollLeft + clientWidth >= scrollWidth - 5);
+        arrowRaf = null;
+      });
     }
 
     prevBtn.addEventListener('click', () => {
@@ -164,10 +172,15 @@ function initCarousels() {
 
     const scrollAmount = 300;
 
+    let carouselRaf;
     function updateArrows() {
-      const { scrollLeft, scrollWidth, clientWidth } = track;
-      prevBtn.classList.toggle('hidden', scrollLeft <= 5);
-      nextBtn.classList.toggle('hidden', scrollLeft + clientWidth >= scrollWidth - 5);
+      if (carouselRaf) return;
+      carouselRaf = requestAnimationFrame(() => {
+        const { scrollLeft, scrollWidth, clientWidth } = track;
+        prevBtn.classList.toggle('hidden', scrollLeft <= 5);
+        nextBtn.classList.toggle('hidden', scrollLeft + clientWidth >= scrollWidth - 5);
+        carouselRaf = null;
+      });
     }
 
     prevBtn.addEventListener('click', () => {
