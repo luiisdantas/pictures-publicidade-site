@@ -1081,6 +1081,12 @@ ul, ol { list-style: none; }
   aspect-ratio: 9 / 16;
 }
 
+/* Carousel/horizontal row: landscape ratio */
+.image-row-carousel .row-img {
+  width: 420px;
+  aspect-ratio: 16 / 9;
+}
+
 /* Image row arrows */
 .image-row-arrow {
   position: absolute;
@@ -1783,6 +1789,10 @@ ul, ol { list-style: none; }
 
   .carousel-item.item-video {
     width: 300px;
+  }
+
+  .image-row-carousel .row-img {
+    width: 320px;
   }
 
   /* About section */
