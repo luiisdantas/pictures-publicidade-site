@@ -990,6 +990,20 @@ ul, ol { list-style: none; }
   margin-bottom: 20px;
 }
 
+.featured-img {
+  margin-bottom: 32px;
+  cursor: zoom-in;
+}
+
+.featured-img img {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  border-radius: var(--radius-md);
+  display: block;
+  margin: 0 auto;
+}
+
 /* Two-row image grid with horizontal scroll (legacy) */
 .image-grid-scroll {
   display: grid;
@@ -1357,7 +1371,8 @@ ul, ol { list-style: none; }
 }
 
 .portfolio-hero .back-link {
-  display: inline-flex;
+  display: flex;
+  justify-content: center;
   align-items: center;
   gap: 8px;
   color: var(--text-muted);
