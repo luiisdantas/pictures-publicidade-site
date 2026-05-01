@@ -7,11 +7,88 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initScrollReveal();
   initSmoothScroll();
+  initHeroParallax();
+  initStaggerCards();
+  initActiveNavSection();
   initImageRowArrows();
   initCarousels();
   initVideoPlayback();
   initMediaLightbox();
 });
+
+/* ================================================================
+   HERO PARALLAX
+   ================================================================ */
+function initHeroParallax() {
+  const hero = document.querySelector('.hero');
+  if (!hero) return;
+
+  const content = hero.querySelector('.hero-content');
+  if (!content) return;
+
+  let rafId;
+  window.addEventListener('scroll', () => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      const scrollY = window.pageYOffset;
+      const limit = window.innerHeight;
+      if (scrollY > limit) { rafId = null; return; }
+
+      // Subtle upward drift as you scroll away from hero
+      content.style.transform = `translateY(${scrollY * 0.18}px)`;
+      content.style.opacity = String(Math.max(0, 1 - scrollY / (limit * 0.75)));
+      rafId = null;
+    });
+  }, { passive: true });
+}
+
+/* ================================================================
+   STAGGER CARDS
+   Automatically adds stagger delay to cards within grid containers
+   ================================================================ */
+function initStaggerCards() {
+  const groups = document.querySelectorAll(
+    '.services-grid, .portfolio-grid, .differentials-grid, .footer-grid'
+  );
+
+  groups.forEach(group => {
+    const cards = group.querySelectorAll(
+      '.service-card, .portfolio-item, .differential-card, .footer-col, .footer-brand'
+    );
+    cards.forEach((card, i) => {
+      if (!card.classList.contains('reveal')) {
+        card.classList.add('reveal');
+      }
+      // Override any existing transition-delay with a proportional stagger
+      card.style.transitionDelay = `${i * 0.08}s`;
+    });
+  });
+}
+
+/* ================================================================
+   ACTIVE NAV SECTION HIGHLIGHT
+   ================================================================ */
+function initActiveNavSection() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  if (!sections.length || !navLinks.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.toggle('nav-active', link.getAttribute('href') === `#${id}`);
+        });
+      }
+    });
+  }, {
+    threshold: 0.35,
+    rootMargin: '-80px 0px -55% 0px'
+  });
+
+  sections.forEach(s => observer.observe(s));
+}
 
 /* ================================================================
    NAVIGATION
