@@ -5,10 +5,10 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
+  initStaggerCards();   // must run BEFORE initScrollReveal so new .reveal elements are observed
   initScrollReveal();
   initSmoothScroll();
   initHeroParallax();
-  initStaggerCards();
   initActiveNavSection();
   initImageRowArrows();
   initCarousels();
@@ -47,19 +47,19 @@ function initHeroParallax() {
    Automatically adds stagger delay to cards within grid containers
    ================================================================ */
 function initStaggerCards() {
+  // NOTE: footer-grid intentionally excluded — footer must always be visible immediately
   const groups = document.querySelectorAll(
-    '.services-grid, .portfolio-grid, .differentials-grid, .footer-grid'
+    '.services-grid, .portfolio-grid, .differentials-grid'
   );
 
   groups.forEach(group => {
     const cards = group.querySelectorAll(
-      '.service-card, .portfolio-item, .differential-card, .footer-col, .footer-brand'
+      '.service-card, .portfolio-item, .differential-card'
     );
     cards.forEach((card, i) => {
       if (!card.classList.contains('reveal')) {
         card.classList.add('reveal');
       }
-      // Override any existing transition-delay with a proportional stagger
       card.style.transitionDelay = `${i * 0.08}s`;
     });
   });
