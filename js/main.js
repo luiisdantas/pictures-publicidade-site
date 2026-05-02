@@ -98,14 +98,16 @@ function initNavigation() {
   const toggle = document.getElementById('navToggle');
   const links = document.getElementById('navLinks');
 
-  // Scroll effect
-  window.addEventListener('scroll', () => {
+  // Scroll effect — apply initial state immediately on load
+  function updateNavScroll() {
     if (window.pageYOffset > 50) {
       nav.classList.add('scrolled');
     } else {
       nav.classList.remove('scrolled');
     }
-  }, { passive: true });
+  }
+  updateNavScroll();
+  window.addEventListener('scroll', updateNavScroll, { passive: true });
 
   // Mobile toggle
   if (toggle && links) {
