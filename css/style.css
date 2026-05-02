@@ -15,7 +15,7 @@
   --dark: #1A0D06;
   --text: #2D1A0C;
   --text-secondary: #5E4232;
-  --text-muted: #9A7A65;
+  --text-muted: #6B4A32;
 
   --accent: #C85020;
   --accent-hover: #A83E16;
@@ -146,7 +146,12 @@ ul, ol { list-style: none; }
 }
 
 .nav-logo { display: flex; align-items: center; gap: 10px; }
-.nav-logo img { height: 48px; width: auto; }
+.nav-logo img {
+  height: 48px;
+  width: auto;
+  /* Recolor the light logo to brand orange-terracotta for the cream background */
+  filter: invert(55%) sepia(1) saturate(800%) hue-rotate(340deg) brightness(0.8);
+}
 
 .nav-logo img + .logo-text { display: none; }
 
@@ -370,8 +375,8 @@ ul, ol { list-style: none; }
 
 .btn-outline {
   background: transparent;
-  color: var(--text-secondary);
-  border: 1.5px solid var(--border-light);
+  color: var(--text);
+  border: 1.5px solid rgba(45, 26, 12, 0.38);
 }
 
 .btn-outline:hover {
@@ -1113,7 +1118,7 @@ ul, ol { list-style: none; }
 .diff-number {
   font-size: 2.5rem;
   font-weight: 300;
-  color: var(--border);
+  color: rgba(200, 80, 32, 0.32);
   line-height: 1;
   min-width: 56px;
   transition: color 0.3s ease;
